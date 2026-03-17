@@ -1,0 +1,23 @@
+# Compiled files
+*.class
+
+# Maven build folder
+target/
+
+# Logs
+*.log
+
+# IntelliJ files
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+
+# Build artifacts
+*.jar
+*.war
