@@ -11,11 +11,11 @@ public class MicrophoneRecorder {
         File outputFile = new File("recorded_audio.wav");
 
         AudioFormat format = new AudioFormat(
-                44100.0f,   // sample rate
-                16,         // sample size
-                1,          // mono
-                true,       // signed
-                false       // little endian
+                44100.0f,  // back to supported format
+                16,
+                1,
+                true,
+                false
         );
 
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);

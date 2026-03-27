@@ -3,54 +3,61 @@ package com.aiassistant;
 import audio.MicrophoneRecorder;
 import com.aiassistant.service.AssistantService;
 
+import javax.swing.*;
 import java.io.File;
 
 public class MainApplication {
 
     public static void main(String[] args) {
 
-        // Create chat window
         ChatWindow window = new ChatWindow();
-
-        // Create assistant service
         AssistantService assistantService = new AssistantService();
 
-        // When Speak button is pressed
+        // Voice input
         window.getSpeakButton().addActionListener(e -> {
+            window.getSpeakButton().setEnabled(false);
+            window.getSendButton().setEnabled(false);
 
-            // Run in background thread so UI does not freeze
             new Thread(() -> {
-
                 try {
-
                     System.out.println("🎤 Please speak...");
-
-                    // Record audio for 7 seconds
-                    MicrophoneRecorder.recordAudio(7);
+                    MicrophoneRecorder.recordAudio(4);
 
                     File audioFile = new File("recorded_audio.wav");
 
-                    // Send audio to AssistantService
-                    String speechText = assistantService.processAudio(audioFile);
+                    SwingUtilities.invokeLater(() -> window.setStatus("Processing speech..."));
 
-                    // Show user message
-                    window.addUserMessage(speechText);
-
-                    // Get AI response
-                    String response = assistantService.getAIResponse(speechText);
-
-                    // Show AI response
-                    window.addAIMessage(response);
+                    assistantService.processAudio(audioFile, window);
 
                 } catch (Exception ex) {
-
                     ex.printStackTrace();
-
+                    SwingUtilities.invokeLater(() -> {
+                        window.setStatus("Error");
+                        window.getSpeakButton().setEnabled(true);
+                        window.getSendButton().setEnabled(true);
+                    });
                 }
-
             }).start();
-
         });
 
+        // Text input with Send button
+        window.getSendButton().addActionListener(e -> sendTypedMessage(window, assistantService));
+
+        // Text input with Enter key
+        window.getInputField().addActionListener(e -> sendTypedMessage(window, assistantService));
+    }
+
+    private static void sendTypedMessage(ChatWindow window, AssistantService assistantService) {
+        String userText = window.getInputField().getText().trim();
+
+        if (userText.isBlank()) {
+            return;
+        }
+
+        window.getSendButton().setEnabled(false);
+        window.getSpeakButton().setEnabled(false);
+        window.getInputField().setText("");
+
+        assistantService.processUserMessage(userText, window);
     }
 }

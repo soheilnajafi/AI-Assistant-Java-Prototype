@@ -7,11 +7,14 @@ import java.net.http.HttpResponse;
 
 public class OpenAIClient {
 
-    private static final String API_KEY = "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";
+    private static final String API_KEY = System.getenv("OPENAI_API_KEY");
 
     public static String askAI(String prompt) throws Exception {
 
-        // Escape characters that break JSON
+        if (API_KEY == null || API_KEY.isBlank()) {
+            throw new IllegalStateException("OPENAI_API_KEY is not set.");
+        }
+
         prompt = prompt
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
@@ -34,19 +37,19 @@ public class OpenAIClient {
                 .build();
 
         HttpClient client = HttpClient.newHttpClient();
-
         HttpResponse<String> response =
                 client.send(request, HttpResponse.BodyHandlers.ofString());
 
         String body = response.body();
 
-        //System.out.println(body);
+        if (!body.contains("\"content\": \"")) {
+            throw new RuntimeException("Unexpected API response: " + body);
+        }
 
         int start = body.indexOf("\"content\": \"") + 12;
         int end = body.indexOf("\",", start);
 
         String message = body.substring(start, end);
-
         return message.replace("\\n", "\n");
     }
 }

@@ -12,6 +12,10 @@ public class WhisperClient {
 
     public static String transcribe(File audioFile) throws Exception {
 
+        if (API_KEY == null || API_KEY.isBlank()) {
+            throw new IllegalStateException("OPENAI_API_KEY is not set.");
+        }
+
         String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
 
         HttpClient client = HttpClient.newHttpClient();
@@ -24,7 +28,7 @@ public class WhisperClient {
         writer.append("Content-Disposition: form-data; name=\"model\"\r\n\r\n");
         writer.append("whisper-1").append("\r\n");
 
-        // language (force English)
+        // language -> force English for better accuracy
         writer.append("--").append(boundary).append("\r\n");
         writer.append("Content-Disposition: form-data; name=\"language\"\r\n\r\n");
         writer.append("en").append("\r\n");
@@ -36,12 +40,14 @@ public class WhisperClient {
         writer.append("Content-Type: audio/wav\r\n\r\n");
         writer.flush();
 
-        FileInputStream inputStream = new FileInputStream(audioFile);
-        byte[] buffer = new byte[4096];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            bos.write(buffer, 0, bytesRead);
+        try (FileInputStream inputStream = new FileInputStream(audioFile)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                bos.write(buffer, 0, bytesRead);
+            }
         }
+
         bos.write("\r\n".getBytes());
 
         writer.append("--").append(boundary).append("--").append("\r\n");
@@ -55,10 +61,15 @@ public class WhisperClient {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
         String responseBody = response.body();
 
-        // simple parsing to extract the transcription text
+        // debug: raw Whisper response
+        System.out.println("Whisper raw response: " + responseBody);
+
+        if (!responseBody.contains("\"text\":\"")) {
+            throw new RuntimeException("Unexpected transcription response: " + responseBody);
+        }
+
         int start = responseBody.indexOf("\"text\":\"") + 8;
         int end = responseBody.indexOf("\"", start);
 

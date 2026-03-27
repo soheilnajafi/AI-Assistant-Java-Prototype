@@ -1,41 +1,146 @@
 package com.aiassistant.service;
 
+import com.aiassistant.ChatWindow;
 import com.aiassistant.OpenAIClient;
 import com.aiassistant.WhisperClient;
 
+import javax.swing.SwingUtilities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AssistantService {
 
-    private List<String> conversationHistory = new ArrayList<>();
+    private final List<String> conversationHistory = new ArrayList<>();
 
-    public String processAudio(File audioFile) throws Exception {
+    public void processAudio(File audioFile, ChatWindow window) {
+        new Thread(() -> {
+            try {
+                String speechText = WhisperClient.transcribe(audioFile);
+                speechText = cleanSpeech(speechText);
 
-        System.out.println("🧠 Processing speech...");
+                if (speechText.isBlank()) {
+                    SwingUtilities.invokeLater(() -> {
+                        window.setStatus("Ready");
+                        window.getSpeakButton().setEnabled(true);
+                        window.getSendButton().setEnabled(true);
+                    });
+                    return;
+                }
 
-        String speechText = WhisperClient.transcribe(audioFile);
+                String finalSpeechText = speechText;
 
-        System.out.println("User said: " + speechText);
+                SwingUtilities.invokeLater(() -> {
+                    window.addUserMessage(finalSpeechText);
+                    window.setStatus("Thinking...");
+                });
 
-        return speechText;
+                String response = getAIResponse(finalSpeechText);
+
+                if (response == null || response.isBlank()) {
+                    SwingUtilities.invokeLater(() -> {
+                        window.setStatus("Ready");
+                        window.getSpeakButton().setEnabled(true);
+                        window.getSendButton().setEnabled(true);
+                    });
+                    return;
+                }
+
+                SwingUtilities.invokeLater(() -> {
+                    window.addAIMessage(response);
+                    window.setStatus("Ready");
+                    window.getSpeakButton().setEnabled(true);
+                    window.getSendButton().setEnabled(true);
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                SwingUtilities.invokeLater(() -> {
+                    window.setStatus("Error");
+                    window.getSpeakButton().setEnabled(true);
+                    window.getSendButton().setEnabled(true);
+                });
+            }
+        }).start();
     }
 
-    public String getAIResponse(String userMessage) throws Exception {
+    public void processUserMessage(String userText, ChatWindow window) {
+        if (userText == null || userText.isBlank()) {
+            SwingUtilities.invokeLater(() -> {
+                window.getSpeakButton().setEnabled(true);
+                window.getSendButton().setEnabled(true);
+            });
+            return;
+        }
+
+        window.addUserMessage(userText);
+        window.setStatus("Thinking...");
+
+        new Thread(() -> {
+            try {
+                String response = getAIResponse(userText);
+
+                if (response == null || response.isBlank()) {
+                    SwingUtilities.invokeLater(() -> {
+                        window.setStatus("Ready");
+                        window.getSpeakButton().setEnabled(true);
+                        window.getSendButton().setEnabled(true);
+                    });
+                    return;
+                }
+
+                SwingUtilities.invokeLater(() -> {
+                    window.addAIMessage(response);
+                    window.setStatus("Ready");
+                    window.getSpeakButton().setEnabled(true);
+                    window.getSendButton().setEnabled(true);
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                SwingUtilities.invokeLater(() -> {
+                    window.setStatus("Error");
+                    window.getSpeakButton().setEnabled(true);
+                    window.getSendButton().setEnabled(true);
+                });
+            }
+        }).start();
+    }
+
+    private String getAIResponse(String userMessage) throws Exception {
+        if (userMessage == null || userMessage.isBlank()) {
+            return "";
+        }
 
         conversationHistory.add("User: " + userMessage);
 
         StringBuilder prompt = new StringBuilder();
-
-        for (String message : conversationHistory) {
-            prompt.append(message).append("\n");
+        for (String msg : conversationHistory) {
+            prompt.append(msg).append("\n");
         }
 
-        String response = OpenAIClient.askAI(prompt.toString());
-
+        String response = OpenAIClient.askAI(prompt.toString()).trim();
         conversationHistory.add("AI: " + response);
 
         return response;
+    }
+
+    private String cleanSpeech(String speechText) {
+        if (speechText == null) {
+            return "";
+        }
+
+        speechText = speechText.replaceAll("(?i)subs by.*", "").trim();
+        speechText = speechText.replaceAll("\\s+", " ").trim();
+
+        if (speechText.matches("^[\\p{Punct}\\s]+$")) {
+            return "";
+        }
+
+        if (speechText.length() < 2) {
+            return "";
+        }
+
+        return speechText;
     }
 }
