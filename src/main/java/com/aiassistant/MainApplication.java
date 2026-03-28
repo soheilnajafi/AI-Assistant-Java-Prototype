@@ -1,10 +1,6 @@
 package com.aiassistant;
 
-import audio.MicrophoneRecorder;
 import com.aiassistant.service.AssistantService;
-
-import javax.swing.*;
-import java.io.File;
 
 public class MainApplication {
 
@@ -13,32 +9,8 @@ public class MainApplication {
         ChatWindow window = new ChatWindow();
         AssistantService assistantService = new AssistantService();
 
-        // Voice inputgit --version
-        window.getSpeakButton().addActionListener(e -> {
-            window.getSpeakButton().setEnabled(false);
-            window.getSendButton().setEnabled(false);
-
-            new Thread(() -> {
-                try {
-                    System.out.println("🎤 Please speak...");
-                    MicrophoneRecorder.recordAudio(4);
-
-                    File audioFile = new File("recorded_audio.wav");
-
-                    SwingUtilities.invokeLater(() -> window.setStatus("Processing speech..."));
-
-                    assistantService.processAudio(audioFile, window);
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    SwingUtilities.invokeLater(() -> {
-                        window.setStatus("Error");
-                        window.getSpeakButton().setEnabled(true);
-                        window.getSendButton().setEnabled(true);
-                    });
-                }
-            }).start();
-        });
+        // Voice input
+        window.getSpeakButton().addActionListener(e -> assistantService.handleVoiceInput(window));
 
         // Text input with Send button
         window.getSendButton().addActionListener(e -> sendTypedMessage(window, assistantService));
