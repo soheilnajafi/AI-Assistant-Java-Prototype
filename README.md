@@ -1,12 +1,13 @@
 # 🎤 AI Voice Assistant (Java)
 
-A lightweight AI-powered desktop voice assistant built with Java.
+AI-powered Java desktop voice assistant with speech-to-text, OpenAI integration, and chat-style UI.
 
-This application captures audio from the microphone, converts speech to text, sends the request to an AI model, and displays the response in a chat-style interface.
+![Java](https://img.shields.io/badge/Java-17-blue)
+![Maven](https://img.shields.io/badge/Maven-Build-red)
+![Status](https://img.shields.io/badge/Status-Working-success)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
-
-<!-- update -->
 
 ## 📸 Demo
 
@@ -39,3 +40,24 @@ AI Request (OpenAI API)
 AI Response
    ↓
 Display in Chat Window
+
+AI-Assistant-Java-Prototype
+│
+├── src/main/java
+│   ├── ai
+│   ├── audio
+│   ├── com.aiassistant
+│   │   ├── service
+│   │   ├── ChatWindow.java
+│   │   ├── MainApplication.java
+│   │   ├── OpenAIClient.java
+│   │   └── WhisperClient.java
+│   ├── speech
+│   └── ui
+│
+├── docs
+│   └── screenshot.png
+│
+├── README.md
+├── LICENSE
+└── pom.xml
