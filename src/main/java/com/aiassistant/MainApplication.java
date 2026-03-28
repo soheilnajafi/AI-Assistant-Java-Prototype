@@ -13,7 +13,7 @@ public class MainApplication {
         ChatWindow window = new ChatWindow();
         AssistantService assistantService = new AssistantService();
 
-        // Voice input
+        // Voice inputgit --version
         window.getSpeakButton().addActionListener(e -> {
             window.getSpeakButton().setEnabled(false);
             window.getSendButton().setEnabled(false);
