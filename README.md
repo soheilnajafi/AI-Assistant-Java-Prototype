@@ -89,7 +89,8 @@ src/main/java/com/aiassistant
 
 ## 📸 Demo
 
-![App Screenshot](docs/demo.png)
+![App Screenshot](docs/screenshot_1.png)
+
 
 ---
 
