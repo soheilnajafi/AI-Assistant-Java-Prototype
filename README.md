@@ -2,7 +2,7 @@
 
 A Java Spring Boot backend application that integrates with OpenAI API to provide real-time AI chat responses.
 
-The system supports conversation-based context, pagination for chat history, and interactive API testing using Swagger.
+The system supports conversation-based context, pagination for chat history, database persistence, service-layer testing, and interactive API testing using Swagger.
 
 ---
 
@@ -16,22 +16,25 @@ The system supports conversation-based context, pagination for chat history, and
 - Pagination support for chat history
 - Conversation-based context handling
 - Global exception handling
+- Service-layer unit testing with JUnit and Mockito
 
 ---
 
 ## 🏗️ Architecture
 
-Backend (Spring Boot REST API)  
-↓  
-Controller Layer  
-↓  
-Service Layer  
-↓  
-Repository Layer (JPA)  
-↓  
-Database (MySQL)  
-↓  
+```text
+Backend (Spring Boot REST API)
+↓
+Controller Layer
+↓
+Service Layer
+↓
+Repository Layer (JPA)
+↓
+Database (MySQL)
+↓
 OpenAI API
+```
 
 ---
 
@@ -40,6 +43,7 @@ OpenAI API
 ### POST `/api/assistant/chat`
 
 #### Request
+
 ```json
 {
   "conversationId": 1,
@@ -48,6 +52,7 @@ OpenAI API
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -76,6 +81,8 @@ Checks whether the API is running.
 - Maven
 - OpenAI API
 - Swagger / OpenAPI
+- JUnit 5
+- Mockito
 
 ---
 
@@ -144,27 +151,18 @@ src/main/java/com/aiassistant
 
 ## 📸 Demo
 
-### 🧪 API Testing via Swagger
+### API Testing via Swagger
 
-#### 🟢 Request Example
-![Swagger Request](swagger-request.png)
+#### Request Example
 
-#### 🔵 Response Example (Context-Aware AI)
-![Swagger Response](swagger-response.png)
+![Swagger Request](docs/swagger-request.png)
+
+#### Response Example
+
+![Swagger Response](docs/swagger-response.png)
 
 ---
 
-## 📌 Future Improvements
-
-
-- 🎤 Voice recording from microphone
-- 🧠 Speech-to-text processing
-- 🤖 AI-generated responses using OpenAI API
-- 💬 Chat-style response display
-- ⚡ Lightweight Java desktop application
-- 🌐 HTTP communication with external APIs
-- ✅ Unit testing for service-layer logic using JUnit and Mockito
----
 ## 🧪 Testing
 
 This project includes unit tests for the service layer using JUnit and Mockito.
@@ -175,12 +173,14 @@ This project includes unit tests for the service layer using JUnit and Mockito.
 - Mocked the OpenAI client to avoid real API calls during testing
 - Verified exception handling when the OpenAI service fails
 - Tested service-layer interaction with the chat repository
+- Verified the `/api/assistant/chat` endpoint using Swagger UI
 
 ### Testing Tools
 
 - JUnit 5
 - Mockito
 - Spring Boot Starter Test
+- Swagger UI
 
 ### Run Tests
 
@@ -189,18 +189,18 @@ mvn test
 ```
 
 ---
-## 🧱 Architecture
 
-- 🔐 Authentication / authorization
-- 🧠 Memory optimization for long conversations
-- 🐳 Docker support
-- ☁️ Cloud deployment
-- 📊 Logging and monitoring improvements
+## 📌 Future Improvements
+
+- Authentication and authorization
+- Memory optimization for long conversations
+- Docker support
+- Cloud deployment
+- Logging and monitoring improvements
 
 ---
 
 ## 👨‍💻 Author
-
 
 Suhill Najafi  
 Java Backend Developer | AI Integration | Spring Boot
