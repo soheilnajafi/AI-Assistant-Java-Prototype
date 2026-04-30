@@ -6,16 +6,16 @@ The system supports conversation-based context, pagination for chat history, and
 
 ---
 
-## 🧠 Features
+## Features
 
-- 🤖 Real-time AI chat responses (OpenAI integration)
-- 🔗 REST API (`/api/assistant/chat`)
-- 🧱 Layered architecture (Controller → Service → Repository)
-- 📘 Swagger UI for API testing
-- 💾 MySQL database with JPA/Hibernate
-- 📄 Pagination support for chat history
-- 🔄 Conversation-based context handling
-- 🛡️ Global exception handling
+- Real-time AI chat responses using OpenAI integration
+- REST API endpoint: `/api/assistant/chat`
+- Layered architecture: Controller → Service → Repository
+- Swagger UI for interactive API testing
+- MySQL database integration with JPA/Hibernate
+- Pagination support for chat history
+- Conversation-based context handling
+- Global exception handling
 
 ---
 
