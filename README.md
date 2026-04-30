@@ -23,9 +23,32 @@ AI-powered Java desktop voice assistant with speech-to-text, OpenAI integration,
 - 💬 Chat-style response display
 - ⚡ Lightweight Java desktop application
 - 🌐 HTTP communication with external APIs
+- ✅ Unit testing for service-layer logic using JUnit and Mockito
+---
+## 🧪 Testing
+
+This project includes unit tests for the service layer using JUnit and Mockito.
+
+### Tested Features
+
+- Validated successful AI response handling in the service layer
+- Mocked the OpenAI client to avoid real API calls during testing
+- Verified exception handling when the OpenAI service fails
+- Tested service-layer interaction with the chat repository
+
+### Testing Tools
+
+- JUnit 5
+- Mockito
+- Spring Boot Starter Test
+
+### Run Tests
+
+```bash
+mvn test
+```
 
 ---
-
 ## 🧱 Architecture
 
 ```text
