@@ -1,21 +1,161 @@
-# 🎤 AI Voice Assistant (Java)
+# 🚀 AI Assistant Backend (Java Spring Boot)
 
-AI-powered Java desktop voice assistant with speech-to-text, OpenAI integration, and chat-style UI.
+A Java Spring Boot backend application that integrates with OpenAI API to provide real-time AI chat responses.
 
-![Java](https://img.shields.io/badge/Java-17-blue)
-![Maven](https://img.shields.io/badge/Maven-Build-red)
-![Status](https://img.shields.io/badge/Status-Working-success)
-![License](https://img.shields.io/badge/License-MIT-green)
+The system supports conversation-based context, pagination for chat history, and interactive API testing using Swagger.
+
+---
+
+## 🧠 Features
+
+- 🤖 Real-time AI chat responses (OpenAI integration)
+- 🔗 REST API (`/api/assistant/chat`)
+- 🧱 Layered architecture (Controller → Service → Repository)
+- 📘 Swagger UI for API testing
+- 💾 MySQL database with JPA/Hibernate
+- 📄 Pagination support for chat history
+- 🔄 Conversation-based context handling
+- 🛡️ Global exception handling
+
+---
+
+## 🏗️ Architecture
+
+Backend (Spring Boot REST API)  
+↓  
+Controller Layer  
+↓  
+Service Layer  
+↓  
+Repository Layer (JPA)  
+↓  
+Database (MySQL)  
+↓  
+OpenAI API
+
+---
+
+## 📡 API Endpoints
+
+### POST `/api/assistant/chat`
+
+#### Request
+```json
+{
+  "conversationId": 1,
+  "message": "Hello AI"
+}
+```
+
+#### Response
+```json
+{
+  "success": true,
+  "reply": "Hello! How can I assist you today?",
+  "error": null,
+  "errors": null
+}
+```
+
+### GET `/api/assistant/history?page=0&size=5`
+
+Returns paginated chat history from the database.
+
+### GET `/api/assistant/health`
+
+Checks whether the API is running.
+
+---
+
+## ⚙️ Tech Stack
+
+- Java 17
+- Spring Boot
+- Spring Data JPA
+- MySQL
+- Maven
+- OpenAI API
+- Swagger / OpenAPI
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/soheilnajafi/AI-Assistant-Java-Prototype.git
+cd AI-Assistant-Java-Prototype
+```
+
+### 2. Configure the database
+
+Update `application.properties` with your MySQL settings:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/ai_assistant_db
+spring.datasource.username=root
+spring.datasource.password=YOUR_PASSWORD
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+### 3. Set your OpenAI API key
+
+Make sure your environment is configured so the OpenAI client can read your API key.
+
+### 4. Run the application
+
+```bash
+mvn clean install
+mvn spring-boot:run
+```
+
+Runs on:
+
+```text
+http://localhost:8080
+```
+
+Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+src/main/java/com/aiassistant
+│
+├── controller        # REST API layer
+├── service           # Business logic
+├── repository        # Database access layer
+├── entity            # Database entities
+├── dto               # Request / response models
+├── client            # OpenAI integration
+└── exception         # Global exception handling
+```
 
 ---
 
 ## 📸 Demo
 
-![AI Voice Assistant Screenshot](docs/screenshot.png)
+### 🧪 API Testing via Swagger
+
+#### 🟢 Request Example
+![Swagger Request](swagger-request.png)
+
+#### 🔵 Response Example (Context-Aware AI)
+![Swagger Response](swagger-response.png)
 
 ---
 
-## 🚀 Features
+## 📌 Future Improvements
+
 
 - 🎤 Voice recording from microphone
 - 🧠 Speech-to-text processing
@@ -51,36 +191,22 @@ mvn test
 ---
 ## 🧱 Architecture
 
-```text
-User Voice
-   ↓
-Audio Recording (Java)
-   ↓
-Speech → Text
-   ↓
-AI Request (OpenAI API)
-   ↓
-AI Response
-   ↓
-Display in Chat Window
+- 🔐 Authentication / authorization
+- 🧠 Memory optimization for long conversations
+- 🐳 Docker support
+- ☁️ Cloud deployment
+- 📊 Logging and monitoring improvements
 
-AI-Assistant-Java-Prototype
-│
-├── src/main/java
-│   ├── ai
-│   ├── audio
-│   ├── com.aiassistant
-│   │   ├── service
-│   │   ├── ChatWindow.java
-│   │   ├── MainApplication.java
-│   │   ├── OpenAIClient.java
-│   │   └── WhisperClient.java
-│   ├── speech
-│   └── ui
-│
-├── docs
-│   └── screenshot.png
-│
-├── README.md
-├── LICENSE
-└── pom.xml
+---
+
+## 👨‍💻 Author
+
+
+Suhill Najafi  
+Java Backend Developer | AI Integration | Spring Boot
+
+---
+
+## 📄 License
+
+MIT License
