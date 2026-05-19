@@ -1,39 +1,43 @@
 # 🚀 AI Assistant Backend (Java Spring Boot)
 
-A Java Spring Boot backend application that integrates with OpenAI API to provide real-time AI chat responses.
+A Java Spring Boot backend application that integrates with the OpenAI API to provide AI chat responses through REST APIs.
 
-The system supports conversation-based context, pagination for chat history, database persistence, service-layer testing, and interactive API testing using Swagger.
+The system supports chat requests, OpenAI API integration, MySQL database persistence, Swagger/OpenAPI testing, environment-based configuration, and Docker Compose setup for running the Spring Boot application with a MySQL container.
 
 ---
 
 ## Features
 
-- Real-time AI chat responses using OpenAI integration
+- Real-time AI chat responses using OpenAI API integration
 - REST API endpoint: `/api/assistant/chat`
-- Layered architecture: Controller → Service → Repository
+- Health check endpoint: `/api/assistant/health`
+- Chat history endpoint: `/api/assistant/history`
+- Layered backend structure using Controller, Client, Repository, DTO, Entity, and Exception packages
+- MySQL database integration with Spring Data JPA / Hibernate
+- Persistent storage for user messages and AI responses
 - Swagger UI for interactive API testing
-- MySQL database integration with JPA/Hibernate
-- Pagination support for chat history
-- Conversation-based context handling
 - Global exception handling
-- Service-layer unit testing with JUnit and Mockito
+- Environment variable configuration for database password and OpenAI API key
+- Dockerized backend application using Dockerfile
+- Docker Compose setup for Spring Boot + MySQL containers
+- Verified end-to-end flow: Swagger → Spring Boot → OpenAI API → MySQL
 
 ---
 
 ## 🏗️ Architecture
 
 ```text
-Backend (Spring Boot REST API)
+User Request
 ↓
-Controller Layer
+Spring Boot REST Controller
 ↓
-Service Layer
+OpenAI Client / Backend Logic
 ↓
-Repository Layer (JPA)
+Repository Layer (Spring Data JPA)
 ↓
-Database (MySQL)
+MySQL Database
 ↓
-OpenAI API
+API Response
 ```
 
 ---
@@ -41,6 +45,8 @@ OpenAI API
 ## 📡 API Endpoints
 
 ### POST `/api/assistant/chat`
+
+Sends a user message to the backend, receives an AI-generated response from OpenAI, and stores the conversation data in MySQL.
 
 #### Request
 
@@ -57,18 +63,27 @@ OpenAI API
 {
   "success": true,
   "reply": "Hello! How can I assist you today?",
-  "error": null,
   "errors": null
 }
 ```
+
+---
 
 ### GET `/api/assistant/history?page=0&size=5`
 
 Returns paginated chat history from the database.
 
+---
+
 ### GET `/api/assistant/health`
 
 Checks whether the API is running.
+
+Example response:
+
+```text
+Assistant API is running
+```
 
 ---
 
@@ -76,13 +91,17 @@ Checks whether the API is running.
 
 - Java 17
 - Spring Boot
+- Spring Web
 - Spring Data JPA
+- Hibernate
 - MySQL
 - Maven
 - OpenAI API
 - Swagger / OpenAPI
-- JUnit 5
-- Mockito
+- Docker
+- Docker Compose
+- Environment Variables
+- Git / GitHub
 
 ---
 
@@ -95,24 +114,37 @@ git clone https://github.com/soheilnajafi/AI-Assistant-Java-Prototype.git
 cd AI-Assistant-Java-Prototype
 ```
 
-### 2. Configure the database
+---
 
-Update `application.properties` with your MySQL settings:
+### 2. Configure environment variables
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/ai_assistant_db
-spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
+This project uses environment variables for sensitive configuration values. Do not commit real passwords or API keys to GitHub.
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+For local IntelliJ run configuration, set:
+
+```text
+DB_PASSWORD=your_mysql_password;OPENAI_API_KEY=your_openai_api_key
 ```
 
-### 3. Set your OpenAI API key
+Example `.env` file for Docker Compose:
 
-Make sure your environment is configured so the OpenAI client can read your API key.
+```env
+MYSQL_ROOT_PASSWORD=your_mysql_password
+OPENAI_API_KEY=your_openai_api_key
+```
 
-### 4. Run the application
+The application reads these values through `application.properties`:
+
+```properties
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/ai_assistant_db}
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD}
+openai.api.key=${OPENAI_API_KEY}
+```
+
+---
+
+### 3. Run the application locally
 
 ```bash
 mvn clean install
@@ -128,7 +160,92 @@ http://localhost:8080
 Swagger UI:
 
 ```text
+http://localhost:8080/swagger-ui.html
+```
+
+Alternative Swagger URL:
+
+```text
 http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+## 🐳 Docker Support
+
+This project includes Docker support for running the Spring Boot backend and MySQL database in containers.
+
+### 1. Build the application JAR
+
+```bash
+mvn clean package
+```
+
+If Maven is not available from the terminal, use the Maven tool window in IntelliJ:
+
+```text
+Maven → Lifecycle → package
+```
+
+---
+
+### 2. Build the Docker image
+
+```bash
+docker build -t ai-assistant:latest .
+```
+
+---
+
+### 3. Run with Docker Compose
+
+```bash
+docker compose up
+```
+
+Docker Compose starts:
+
+```text
+ai-assistant-app
+ai-assistant-mysql
+```
+
+---
+
+### 4. Access the application
+
+Application URL:
+
+```text
+http://localhost:8080
+```
+
+Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui.html
+```
+
+Alternative Swagger URL:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+### 5. MySQL container port mapping
+
+```text
+localhost:3307 → mysql:3306
+```
+
+---
+
+### 6. Verified Docker flow
+
+```text
+Swagger → Spring Boot Docker Container → OpenAI API → MySQL Docker Container
 ```
 
 ---
@@ -138,64 +255,47 @@ http://localhost:8080/swagger-ui/index.html
 ```text
 src/main/java/com/aiassistant
 │
-├── controller        # REST API layer
-├── service           # Business logic
-├── repository        # Database access layer
-├── entity            # Database entities
-├── dto               # Request / response models
-├── client            # OpenAI integration
-└── exception         # Global exception handling
+├── AssistantApiApplication.java     # Main Spring Boot application
+├── client                           # OpenAI integration logic
+├── controller                       # REST API layer
+├── dto                              # Request / response models
+├── entity                           # Database entities
+├── exception                        # Global exception handling
+└── repository                       # Database access layer
 ```
 
 ---
 
-## 📸 Demo
+## 🧪 Testing and Validation
 
-### API Testing via Swagger
+The application was tested using Swagger UI and Docker Compose.
 
-#### Request Example
+### Verified Features
 
-![Swagger Request](docs/swagger-request.png)
-
-#### Response Example
-
-![Swagger Response](docs/swagger-response.png)
-
----
-
-## 🧪 Testing
-
-This project includes unit tests for the service layer using JUnit and Mockito.
-
-### Tested Features
-
-- Validated successful AI response handling in the service layer
-- Mocked the OpenAI client to avoid real API calls during testing
-- Verified exception handling when the OpenAI service fails
-- Tested service-layer interaction with the chat repository
-- Verified the `/api/assistant/chat` endpoint using Swagger UI
+- Verified `/api/assistant/health` endpoint returns a successful response
+- Verified `/api/assistant/chat` endpoint returns an AI-generated response
+- Verified OpenAI API integration through environment variables
+- Verified MySQL persistence for user messages and AI responses
+- Verified Docker Compose startup for Spring Boot and MySQL containers
+- Verified stored chat records inside the Docker MySQL container
 
 ### Testing Tools
 
-- JUnit 5
-- Mockito
-- Spring Boot Starter Test
 - Swagger UI
-
-### Run Tests
-
-```bash
-mvn test
-```
+- MySQL Workbench
+- Docker CLI
+- Docker Compose
+- Spring Boot Starter Test
 
 ---
 
 ## 📌 Future Improvements
 
+- GitHub Actions CI/CD pipeline
+- AWS deployment using EC2/RDS
 - Authentication and authorization
+- Unit and integration test coverage
 - Memory optimization for long conversations
-- Docker support
-- Cloud deployment
 - Logging and monitoring improvements
 
 ---
