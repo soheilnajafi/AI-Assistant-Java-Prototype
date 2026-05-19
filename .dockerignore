@@ -1,0 +1,12 @@
+.git
+.idea
+target
+.env
+Key.txt
+*.key
+*.log
+*.iml
+docs
+devlog
+AI-Assistant-Java-Prototype
+1_VocalGPT Assistant.txt
