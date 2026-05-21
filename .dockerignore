@@ -1,6 +1,5 @@
 .git
 .idea
-target
 .env
 Key.txt
 *.key
